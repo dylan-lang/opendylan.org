@@ -1,82 +1,109 @@
 <?xml version = "1.0"?>
-<koala>
 
-  <listener address = "0.0.0.0" port = "8000"/>
+<koala>
+  <server use-default-virtual-host="yes"
+	  debug="no"
+	  />
+
+  <listener address = "0.0.0.0" port = "8001"/>
+<!--
   <listener address = "0.0.0.0" port = "8443" ssl = "yes"
             certificate = "certificate.pem"
             key = "key.pem"
             />
+-->
 
-  <server root="/home/cgay/trunk/libraries/network/opendylan.org"
-	  working-directory="dsp/opendylan.org"
-          debug="no"
-          use-default-virtual-host="yes"
-          />
+  <dsp reparse-templates="yes" />
 
-  <!-- Index.html default doc is for the DRM.  Should really have a separate
-       <directory> element for each book. -->
-  <directory
-      url = "/books"
-      location = "/home/cgay/trunk/www/books"
-      allow-directory-listing = "no"
-      allow-multi-view = "yes"
-      default-documents = "index.html,index.htm,Index.html"
-      />
+  <!-- Serve some static content -->
+  <directory  url="/static"
+	      location="/home/cgay/dylan-wiki/static"
+	      allow-multi-view="yes"
+	      allow-directory-listing="no"
+	      follow-symlinks="no"
+	      default-documents="index.html,index.htm,Index.html"
+	      default-content-type="text/html"
+	      />
 
-  <!-- static files for opendylan.org web pages -->
-  <directory
-      url = "/static"
-      location = "/home/cgay/trunk/libraries/network/opendylan.org/static"
-      />
+  <!-- Download directory -->
+  <directory url="/static/download"
+	     location="/ftproot/pub/gd"
+	     allow-multi-view="yes"
+	     follow-symlinks="no"
+	     allow-directory-listing="yes"
+	     default-documents=""
+	     default-content-type="application/octet-stream"
+	     />
 
-  <!-- downloads directory -->
-  <directory
-      url = "/downloads"
-      location = "/ftproot/pub/gd/"
-      allow-directory-listing = "yes" />
+  <!-- Gwydion docs -->
+  <directory url="/static/gdref"
+	     location="/var/www/gwydion"
+	     allow-multi-view="yes"
+	     follow-symlinks="yes"
+	     allow-directory-listing="no"
+	     default-documents=""
+	     default-content-type="text/html"
+	     />
 
-  <!-- CGI scripts for opendylan.org itself.  -->
-  <cgi-directory
-      url = "/cgi-bin"
-      location = "/usr/lib/cgi-bin"
-      />
+  <!-- Open Dylan docs -->
+  <directory url="/static/documentation/opendylan"
+	     location="/var/www/website/documentation/opendylan"
+	     allow-multi-view="yes"
+	     follow-symlinks="no"
+	     allow-directory-listing="yes"
+	     default-documents="index.htm"
+	     default-content-type="text/html"
+	     />
 
-  <cgi-directory
-      url = "/cgi-bin/cvszilla"
-      location = "/usr/share/cvszilla/cgi-bin"
-      />
+  <alias url="/"     target="/wiki/"/>
+  <alias url="/wiki" target="/wiki/"/>
 
-  <!-- This directory is not available on Mccarthy.
-       Also it was originally mapped to just /cgi-bin. -->
-  <cgi-directory
-      url = "/cgi-bin/viewvc"
-      location = "/home/cgay/viewvc-1.0.12/bin/cgi"
-      extensions = "cgi"
-      />
+  <!-- TODO: site-name and site-url should be in an <atom> or <feed> element. -->
+  <!--
+     git-repository-root (required)
+         Full path of main git repository.  This is where wiki page
+	 and group data is stored.
+     git-user-repository-root (required)
+         Full path of user git repository.  This is where user data
+	 is stored.  You may want to keep this data secure.
+     git-executable (optional)
+         Full path of git executable (default: "git").
+     site-name
+         Sent as the title of Atom feeds.
+     site-url
+         Sent as the URI of Atom feeds.
+     url-prefix  (TODO: should delete this and just use site-url)
+         Prefix for all wiki URLs.  Defaults to "/wiki".  May be "".
+     static-directory
+         Directory where the wiki should look for its static files.
+	 This should point to the wiki project directory; the one
+	 containing the www, dylan, and dsp subdirectories.
+     -->
+  <wiki site-name="Dylan Wiki"
+        site-url="http://www.opendylan.org:8001"
+	url-prefix="/wiki"
+	static-directory="/home/cgay/git/wiki/www"
+	git-repository-root="/home/cgay/dylan-wiki/data"
+	git-user-repository-root="/home/cgay/dylan-wiki/user-data"
+	git-executable="/usr/bin/git"
+	python-executable="/usr/bin/python"
+	rst2html="/usr/bin/rst2html"
+	rst2html-template="/home/cgay/git/wiki/rst2html-template.txt"
+        >
+    <!-- Note that the administrator's email address will be the one
+         from which account emails are sent, so it runs a high spam risk.
+      -->
+    <administrator password="password"
+                   email="recipient@opendylan.org"/>
+    <authentication realm="dylan-wiki"/>
+    <mail host="lists.opendylan.org"/>
+  </wiki>
 
   <cgi-directory
       url = "/cgi-bin/bugzilla"
       location = "/usr/lib/cgi-bin/bugzilla"
       extensions = "cgi"
       />
-
-  <dsp reparse-templates="yes" />
-
-  <wiki content-directory = "/home/cgay/opendylan.org/database"
-        static-directory = "/home/cgay/trunk/libraries/network/wiki/www"
-        site-name = "Dylan Wiki"
-        site-url = "http://www.opendylan.org:8000"
-        url-prefix = "/wiki"
-        >
-    <!-- Note that the administrator's email address will be the one
-         from which account emails are sent, so it runs a high spam risk.
-      -->
-    <administrator username = "administrator"
-                   password = "..."
-                   email = "hackers@lists.opendylan.org"/>
-    <authentication realm = "dylan-wiki"/>
-    <mail host = "lists.opendylan.org"/>
-  </wiki>
 
 
   <!-- TODO: the base-url is not yet respected, so each of the patterns
