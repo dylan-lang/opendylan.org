@@ -192,7 +192,7 @@ define table $drm-name-map :: <string-table> = {
   "language:" => "Dylan_Interchange_Format#language:",
   "module:" => "Dylan_Interchange_Format#module:",
   "author:" => "Dylan_Interchange_Format#author:",
-  "==" => "Equality_and_Comparison#not",
+  "==" => "Equality_and_Comparison#identity",
   "~==" => "Equality_and_Comparison#not_identity",
   "=" => "Equality_and_Comparison#equal",
   "~=" => "Equality_and_Comparison#not_equal",
